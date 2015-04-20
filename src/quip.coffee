@@ -11,6 +11,7 @@ WebSocket = require "ws"
 class QuipHubot extends Adapter
   constructor: (robot) ->
     @robot = robot
+    @retries = 0
     super
 
   send: (envelope, strings...) ->
@@ -28,13 +29,20 @@ class QuipHubot extends Adapter
     return @robot.logger.error "No access token provided to Hubot" unless options.token
 
     @client = new Quip.Client {accessToken: options.token}
-    url = @client.getWebsocket(@.websocketUrl)
+    @client.getWebsocket(@.websocketUrl)
 
   websocketUrl: (error, response) =>
-    @robot.logger.error error if error
-    @socketUrl = response.url
-    @robot.name = "https://quip.com/" + response.user_id
-    @connect()
+    if error and @retries < 5
+      @robot.logger.error error
+      @retries++
+      @logger.info "Trying again in %ds", @retries * 1000
+      setTimeout =>
+        @client.getWebsocket(@.websocketUrl)
+      , @retries * 1000
+    else
+      @socketUrl = response.url
+      @robot.name = "https://quip.com/" + response.user_id
+      @connect()
 
   messageSent: (error, response) =>
     @robot.logger.error error if error
