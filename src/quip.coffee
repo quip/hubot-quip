@@ -54,6 +54,7 @@ class QuipHubot extends Adapter
 
   connect: ->
     return @robot.logger.error "No Socket URL" unless @socketUrl
+    @robot.logger.info @socketUrl
     @ws = new WebSocket @socketUrl
     @ws.on "open", =>
       @robot.logger.info "Opened"
