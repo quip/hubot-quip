@@ -65,8 +65,9 @@ class QuipHubot extends Adapter
         if Date.now() - @lastBeatSeen > 30000
           @robot.logger.error "Heartbeat too old at %ds", (Date.now() - @lastBeatSeen) / 1000
           @reconnect()
-        @ws.send JSON.stringify({"type": "heartbeat"})
-        @robot.logger.info "Sent heartbeat"
+        else
+          @ws.send JSON.stringify({"type": "heartbeat"})
+          @robot.logger.info "Sent heartbeat"
       , 5000
       @emit "connected"
     @ws.on "message", (data, flags) =>
