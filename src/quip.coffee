@@ -96,6 +96,8 @@ class QuipHubot extends Adapter
       when "heartbeat"
         @robot.logger.info "Got heartbeat"
         @lastBeatSeen = Date.now()
+      when "error"
+        @robot.logger.error packet.message
       when "message"
         user = @robot.brain.userForId packet.user.id, name: packet.user.name, room: packet.thread.id
         message = new TextMessage user, packet.message.text, packet.message.id
