@@ -28,17 +28,21 @@ class QuipHubot extends Adapter
 
     return @robot.logger.error "No access token provided to Hubot" unless options.token
 
+    @robot.logger.info "Fetching websocket URL..."
     @client = new Quip.Client {accessToken: options.token}
     @client.getWebsocket(@.websocketUrl)
 
   websocketUrl: (error, response) =>
-    if error and @retries < 5
-      @robot.logger.error error
-      @retries++
-      @logger.info "Trying again in %ds", @retries * 1000
-      setTimeout =>
-        @client.getWebsocket(@.websocketUrl)
-      , @retries * 1000
+    if error
+      if @retries < 10
+        @robot.logger.error error
+        @retries++
+        @logger.info "Trying again in %ds", @retries * 1000
+        setTimeout =>
+          @client.getWebsocket(@.websocketUrl)
+        , @retries * 1000
+      else
+        @robot.logger.error "Giving up"
     else
       @socketUrl = response.url
       @robot.name = "https://quip.com/" + response.user_id
