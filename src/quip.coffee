@@ -44,6 +44,7 @@ class QuipHubot extends Adapter
     @ws = new WebSocket @socketUrl
     @ws.on "open", =>
       @robot.logger.info "Opened"
+      @connected = true
       @heartbeatTimeout = setInterval =>
         if not @connected then return
         @robot.logger.info "Heartbeat"
@@ -56,6 +57,7 @@ class QuipHubot extends Adapter
       @robot.logger.error error
     @ws.on "close", =>
       @robot.logger.info "Closed"
+      @connected = false
     @ws.on "ping", (data, flags) =>
       @ws.pong
 
