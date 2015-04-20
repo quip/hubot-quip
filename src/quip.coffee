@@ -59,11 +59,11 @@ class QuipHubot extends Adapter
     @ws.on "open", =>
       @robot.logger.info "Opened"
       @connected = true
-      @lastBeatSeen = Date.now()
+      @lastMessageSeen = Date.now()
       @heartbeatTimeout = setInterval =>
         if not @connected then return
-        if Date.now() - @lastBeatSeen > 30000
-          @robot.logger.error "Heartbeat too old at %ds", (Date.now() - @lastBeatSeen) / 1000
+        if Date.now() - @lastMessageSeen > 30000
+          @robot.logger.error "Heartbeat too old at %ds", (Date.now() - @lastMessageSeen) / 1000
           @reconnect()
         else
           @ws.send JSON.stringify({"type": "heartbeat"})
@@ -92,10 +92,10 @@ class QuipHubot extends Adapter
     , 5000
 
   websocketMessage: (packet) ->
+    @lastMessageSeen = Date.now()
     switch packet.type
       when "heartbeat"
         @robot.logger.info "Got heartbeat"
-        @lastBeatSeen = Date.now()
       when "error"
         @robot.logger.error packet.message
       when "message"
