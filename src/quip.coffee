@@ -81,6 +81,9 @@ class QuipHubot extends Adapter
       @ws.pong
 
   reconnect: ->
+    if @heartbeatTimeout
+      clearInterval @heartbeatTimeout
+      @heartbeatTimeout = null
     @ws.close()
     @connected = false
     setTimeout =>
