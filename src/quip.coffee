@@ -53,8 +53,8 @@ class QuipHubot extends Adapter
     @robot.logger.error error if error
 
   connect: ->
+    return if @connected
     return @robot.logger.error "No Socket URL" unless @socketUrl
-    @robot.logger.info @socketUrl
     @ws = new WebSocket @socketUrl
     @ws.on "open", =>
       @robot.logger.info "Opened"
@@ -69,6 +69,12 @@ class QuipHubot extends Adapter
       @websocketMessage JSON.parse(data)
     @ws.on "error", (error) =>
       @robot.logger.error error
+      @ws.close()
+      @connected = false
+      setTimeout =>
+        @connect()
+      , 5000
+      @connect()
     @ws.on "close", =>
       @robot.logger.info "Closed"
       @connected = false
