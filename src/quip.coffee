@@ -5,7 +5,7 @@ catch
   prequire = require("parent-require")
   {Robot,Adapter,TextMessage,User} = prequire "hubot"
 
-Quip = require "quip"
+Quip = require "./quip.js"
 WebSocket = require "ws"
 
 class QuipHubot extends Adapter
