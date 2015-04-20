@@ -34,8 +34,9 @@ class QuipHubot extends Adapter
 
   websocketUrl: (error, response) =>
     if error
+      @robot.logger.error error
+      @robot.logger.error @retries
       if @retries < 10
-        @robot.logger.error error
         @retries++
         @logger.info "Trying again in %ds", @retries * 1000
         setTimeout =>
