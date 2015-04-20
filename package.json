@@ -1,0 +1,38 @@
+{
+  "name": "hubot-quip",
+  "version": "0.0.1",
+  "description": "A Quip adapter for Hubot",
+  "author": {
+      "name": "Quip",
+      "url": "https://quip.com/"
+  },
+  "contributors": [
+    {
+      "name": "Casey Muller",
+      "email": "casey@quip.com",
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/quip/hubot-quip.git"
+  },
+   "bugs": {
+    "url": "https://github.com/quip/hubot-quip/issues",
+    "email": "support@quip.com"
+  },
+  "main": "src/quip.coffee",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "casey@quip.com",
+  "license": "Apache",
+  "dependencies": {
+    "ws": "0.7.1"
+  },
+  "peerDependencies": {
+    "hubot": ">=2.0"
+  },
+  "devDependencies": {
+    "coffee-script": ">=1.2.0"
+  }
+}
