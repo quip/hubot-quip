@@ -35,7 +35,7 @@ class QuipHubot extends Adapter
   isImageUrl: (url) ->
     return false unless url.substring(0, 4) == "http"
     return ["jpg", "jpeg", "png", "gif"].some (ext) ->
-      return url.indexOf(ext, url.length - ext.length) > -1
+      return url.toLowerCase().indexOf(ext, url.length - ext.length) > -1
 
   reply: (envelope, strings...) ->
     @robot.logger.info "Reply"
