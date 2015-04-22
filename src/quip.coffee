@@ -95,14 +95,16 @@ class QuipHubot extends Adapter
   websocketMessage: (packet) ->
     @lastMessageSeen = Date.now()
     switch packet.type
-      when "heartbeat"
-        @robot.logger.info "Got heartbeat"
       when "error"
         @robot.logger.error packet.message
       when "message"
+        if @robot.name.indexOf(packet.user.id) != -1
+          return
         user = @robot.brain.userForId packet.user.id, name: packet.user.name, room: packet.thread.id
         message = new TextMessage user, packet.message.text, packet.message.id
         @robot.receive message
+      else
+        @robot.logger.info "Got %s", packet.type
 
 exports.use = (robot) ->
   new QuipHubot robot
