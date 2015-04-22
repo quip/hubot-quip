@@ -19,7 +19,7 @@ class QuipHubot extends Adapter
     attachments = []
     for msg in strings
       period = msg.lastIndexOf(".")
-      if msg.substring(0, 4) == "http" && period != -1 && ["jpg", "jpeg", "png", "gif"].indexOf(msg.substring(period + 1).toLowerCase()) != -1
+      if @.isImageUrl(msg)
         attachments.push(msg)
       else
         text.push(msg)
@@ -31,6 +31,11 @@ class QuipHubot extends Adapter
         options.content = text.join("\n\n")
     @robot.logger.info "Sending to #{envelope.room}: #{JSON.stringify(options)}"
     @client.newMessage options, @.messageSent
+
+  isImageUrl: (url) ->
+    return false unless url.substring(0, 4) == "http"
+    return ["jpg", "jpeg", "png", "gif"].some (ext) ->
+      return url.indexOf(ext, url.length - ext.length) > -1
 
   reply: (envelope, strings...) ->
     @robot.logger.info "Reply"
