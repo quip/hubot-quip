@@ -65,8 +65,11 @@ class QuipHubot extends Adapter
         @robot.logger.error "Giving up"
     else
       @socketUrl = response.url
-      @robot.name = "https://quip.com/" + response.user_id
+      @robot.name = @.quipMention(response.user_id)
       @connect()
+
+  quipMention: (userId) ->
+    return "https://quip.com/" + userId
 
   messageSent: (error, response) =>
     @robot.logger.error error if error
@@ -118,7 +121,7 @@ class QuipHubot extends Adapter
       when "message"
         if @robot.name.indexOf(packet.user.id) != -1
           return
-        user = @robot.brain.userForId packet.user.id, name: packet.user.name, room: packet.thread.id
+        user = @robot.brain.userForId packet.user.id, name: @.quipMention(packet.user.id), room: packet.thread.id
         message = new TextMessage user, packet.message.text, packet.message.id
         @robot.receive message
       else
