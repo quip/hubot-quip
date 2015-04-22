@@ -24,12 +24,13 @@ class QuipHubot extends Adapter
 
   run: ->
     options =
-      token: process.env.QUIP_HUBOT_TOKEN
+      accessToken: process.env.QUIP_HUBOT_TOKEN
+      baseUrl: process.env.QUIP_HUBOT_BASEURL
 
-    return @robot.logger.error "No access token provided to Hubot" unless options.token
+    return @robot.logger.error "No access token provided to Hubot" unless options.accessToken
 
     @robot.logger.info "Fetching websocket URL..."
-    @client = new Quip.Client {accessToken: options.token}
+    @client = new Quip.Client options
     @client.getWebsocket(@.websocketUrl)
 
   websocketUrl: (error, response) =>
