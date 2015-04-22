@@ -15,9 +15,22 @@ class QuipHubot extends Adapter
     super
 
   send: (envelope, strings...) ->
+    text = []
+    attachments = []
     for msg in strings
-      @robot.logger.debug "Sending to #{envelope.room}: #{msg}"
-      @client.newMessage {"threadId": envelope.room, "content": msg}, @.messageSent
+      period = msg.lastIndexOf(".")
+      if msg.substring(0, 4) == "http" && period != -1 && ["jpg", "jpeg", "png", "gif"].indexOf(msg.substring(period + 1).toLowerCase()) != -1
+        attachments.push(msg)
+      else
+        text.push(msg)
+    return unless text.length or attachments.length
+    options = {"threadId": envelope.room}
+    if attachments.length
+      options.attachments = attachments.join(",")
+    if text.length
+        options.content = text.join("\n\n")
+    @robot.logger.info "Sending to #{envelope.room}: #{JSON.stringify(options)}"
+    @client.newMessage options, @.messageSent
 
   reply: (envelope, strings...) ->
     @robot.logger.info "Reply"

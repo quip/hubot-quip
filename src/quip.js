@@ -247,6 +247,7 @@ Client.prototype.newMessage = function(options, callback) {
     var args = {
         'thread_id': options.threadId,
         'content': options.content,
+        'attachments': options.attachments,
         'silent': (options.silent ? 1 : undefined)
     };
     this.call_('messages/new', callback, args);
