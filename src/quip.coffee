@@ -12,6 +12,7 @@ class QuipHubot extends Adapter
   constructor: (robot) ->
     @robot = robot
     @retries = 0
+    @alreadyConnected = false
     super
 
   send: (envelope, strings...) ->
@@ -24,7 +25,7 @@ class QuipHubot extends Adapter
       else
         text.push(msg)
     return unless text.length or attachments.length
-    options = {"threadId": envelope.room}
+    options = {"threadId": envelope.room, "serviceId": envelope.message.id}
     if attachments.length
       options.attachments = attachments.join(",")
     if text.length
@@ -54,7 +55,6 @@ class QuipHubot extends Adapter
   websocketUrl: (error, response) =>
     if error
       @robot.logger.error error
-      @robot.logger.error @retries
       if @retries < 10
         @retries++
         @logger.info "Trying again in %ds", @retries * 1000
@@ -75,6 +75,7 @@ class QuipHubot extends Adapter
     @robot.logger.error error if error
 
   connect: ->
+    @robot.logger.info "Connecting..."
     return if @connected
     return @robot.logger.error "No Socket URL" unless @socketUrl
     @ws = new WebSocket @socketUrl
@@ -91,7 +92,8 @@ class QuipHubot extends Adapter
           @ws.send JSON.stringify({"type": "heartbeat"})
           @robot.logger.info "Sent heartbeat"
       , 5000
-      @emit "connected"
+      @emit "connected" unless @alreadyConnected
+      @alreadyConnected = true
     @ws.on "message", (data, flags) =>
       @websocketMessage JSON.parse(data)
     @ws.on "error", (error) =>
@@ -104,6 +106,7 @@ class QuipHubot extends Adapter
       @ws.pong
 
   reconnect: ->
+    @robot.logger.info "Re-Connecting in 5..."
     if @heartbeatTimeout
       clearInterval @heartbeatTimeout
       @heartbeatTimeout = null
