@@ -8,6 +8,10 @@ catch
 Quip = require "./quip.js"
 WebSocket = require "ws"
 
+class QuipTextMessage extends TextMessage
+  constructor: (@user, @quipMessage) ->
+    super @user, @quipMessage.text, @quipMessage.id
+
 class QuipHubot extends Adapter
   constructor: (robot) ->
     @robot = robot
@@ -30,6 +34,8 @@ class QuipHubot extends Adapter
       options.attachments = attachments.join(",")
     if text.length
         options.content = text.join("\n\n")
+    if envelope.message.quipMessage.annotation
+        options.annotationId = envelope.message.quipMessage.annotation.id
     @robot.logger.info "Sending to #{envelope.room}: #{JSON.stringify(options)}"
     @client.newMessage options, @.messageSent
 
@@ -125,7 +131,7 @@ class QuipHubot extends Adapter
         if @robot.name.indexOf(packet.user.id) != -1
           return
         user = @robot.brain.userForId packet.user.id, name: @.quipMention(packet.user.id), room: packet.thread.id
-        message = new TextMessage user, packet.message.text, packet.message.id
+        message = new QuipTextMessage user, packet.message
         @robot.receive message
       else
         @robot.logger.info "Got %s", packet.type
