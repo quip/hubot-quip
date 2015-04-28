@@ -45,7 +45,9 @@ class QuipHubot extends Adapter
       return url.toLowerCase().indexOf(ext, url.length - ext.length) > -1
 
   reply: (envelope, strings...) ->
-    @robot.logger.info "Reply"
+    @robot.logger.info "Sending reply"
+    for msg in strings
+      @send envelope, "#{envelope.user.name}: #{msg}"
 
   run: ->
     options =
