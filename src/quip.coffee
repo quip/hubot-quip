@@ -9,8 +9,8 @@ Quip = require "./quip.js"
 WebSocket = require "ws"
 
 class QuipTextMessage extends TextMessage
-  constructor: (@user, @quipMessage) ->
-    super @user, @quipMessage.text, @quipMessage.id
+  constructor: (@user, @text, @quipMessage) ->
+    super @user, @text, @quipMessage.id
 
 class QuipHubot extends Adapter
   constructor: (robot) ->
@@ -73,7 +73,7 @@ class QuipHubot extends Adapter
         @robot.logger.error "Giving up"
     else
       @socketUrl = response.url
-      @robot.name = @.quipMention(response.user_id)
+      @selfMention = @.quipMention(response.user_id)
       @connect()
 
   quipMention: (userId) ->
@@ -133,7 +133,10 @@ class QuipHubot extends Adapter
         if @robot.name.indexOf(packet.user.id) != -1
           return
         user = @robot.brain.userForId packet.user.id, name: @.quipMention(packet.user.id), room: packet.thread.id
-        message = new QuipTextMessage user, packet.message
+        text = packet.message.text
+        if @selfMention == text.substr 0, @selfMention.length
+          text = @robot.name + text.substr @selfMention.length
+        message = new QuipTextMessage user, text, packet.message
         @robot.receive message
       else
         @robot.logger.info "Got %s", packet.type
