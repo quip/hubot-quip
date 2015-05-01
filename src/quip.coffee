@@ -9,8 +9,8 @@ Quip = require "./quip.js"
 WebSocket = require "ws"
 
 class QuipTextMessage extends TextMessage
-  constructor: (@user, @text, @quipMessage) ->
-    super @user, @text, @quipMessage.id
+  constructor: (@user, @text, @quipPacket) ->
+    super @user, @text, @quipPacket.message.id
 
 class QuipHubot extends Adapter
   constructor: (robot) ->
@@ -29,13 +29,13 @@ class QuipHubot extends Adapter
       else
         text.push(msg)
     return unless text.length or attachments.length
+    packet = envelope.message.quipPacket
     options =
-        threadId: envelope.room
-        serviceId: envelope.message.id
+        threadId: packet.thread.id
+        serviceId: packet.message.id
     options.attachments = attachments.join "," if attachments.length
     options.content = text.join "\n\n" if text.length
-    if envelope.message.quipMessage.annotation
-        options.annotationId = envelope.message.quipMessage.annotation.id
+    options.annotationId = packet.message.annotation.id if packet.message.annotation
     @robot.logger.info "Sending to #{envelope.room}: #{JSON.stringify(options)}"
     @client.newMessage options, @messageSent
 
@@ -136,7 +136,7 @@ class QuipHubot extends Adapter
         text = packet.message.text
         if @selfMention == text.substr 0, @selfMention.length
           text = @robot.name + text.substr @selfMention.length
-        message = new QuipTextMessage user, text, packet.message
+        message = new QuipTextMessage user, text, packet
         @robot.receive message
       else
         @robot.logger.info "Got %s", packet.type
