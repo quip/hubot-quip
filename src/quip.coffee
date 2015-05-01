@@ -130,7 +130,7 @@ class QuipHubot extends Adapter
       when "error"
         @robot.logger.error packet.message
       when "message"
-        if -1 != @robot.name.indexOf packet.user.id
+        if -1 != @selfMention.indexOf packet.user.id
           return
         user = @robot.brain.userForId packet.user.id, name: @quipMention packet.user.id, room: packet.thread.id
         text = packet.message.text
