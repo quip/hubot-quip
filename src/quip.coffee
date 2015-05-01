@@ -128,7 +128,7 @@ class QuipHubot extends Adapter
     @lastMessageSeen = Date.now()
     switch packet.type
       when "error"
-        @robot.logger.error packet.message
+        @robot.logger.error packet.debug
       when "message"
         if -1 != @selfMention.indexOf packet.user.id
           return
