@@ -36,7 +36,7 @@ class QuipHubot extends Adapter
       options.annotationId = packet.message.annotation.id if packet.message.annotation
     else
       options =
-        threadId: envelope.room
+        threadId: envelope.room or envelope.message.room
     options.attachments = attachments.join "," if attachments.length
     options.content = text.join "\n\n" if text.length
     @robot.logger.info "Sending to #{envelope.room}: #{JSON.stringify(options)}"
@@ -137,9 +137,13 @@ class QuipHubot extends Adapter
         if -1 != @robot.name.indexOf packet.user.id
           return
         user = @robot.brain.userForId packet.user.id, name: @quipMention packet.user.id, room: packet.thread.id
+        user.room = packet.thread.id
         text = packet.message.text
         if @robotName == text.substr 0, @robotName.length
           text = @robot.name + text.substr @robotName.length
+        else if packet.thread.thread_class == "two_person_chat" and @robot.name != text.substr 0, @robot.name.length
+          # Pretend we were mention for 1:1 chats
+          text = "#{@robot.name} #{text}"
         message = new QuipTextMessage user, text, packet
         @robot.receive message
       else
