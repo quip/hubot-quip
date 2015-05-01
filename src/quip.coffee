@@ -23,19 +23,22 @@ class QuipHubot extends Adapter
     text = []
     attachments = []
     for msg in strings
-      period = msg.lastIndexOf(".")
       if @isImageUrl(msg)
         attachments.push(msg)
       else
         text.push(msg)
     return unless text.length or attachments.length
     packet = envelope.message.quipPacket
-    options =
+    if packet
+      options =
         threadId: packet.thread.id
         serviceId: packet.message.id
+      options.annotationId = packet.message.annotation.id if packet.message.annotation
+    else
+      options =
+        threadId: envelope.room
     options.attachments = attachments.join "," if attachments.length
     options.content = text.join "\n\n" if text.length
-    options.annotationId = packet.message.annotation.id if packet.message.annotation
     @robot.logger.info "Sending to #{envelope.room}: #{JSON.stringify(options)}"
     @client.newMessage options, @messageSent
 
