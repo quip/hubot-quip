@@ -16,7 +16,7 @@
     "type": "git",
     "url": "http://github.com/quip/hubot-quip.git"
   },
-   "bugs": {
+  "bugs": {
     "url": "https://github.com/quip/hubot-quip/issues",
     "email": "support@quip.com"
   },
