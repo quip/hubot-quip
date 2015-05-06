@@ -250,6 +250,7 @@ Client.prototype.newMessage = function(options, callback) {
         'attachments': options.attachments,
         'service_id': options.serviceId,
         'annotation_id': options.annotationId,
+        'frame': options.frame,
         'silent': (options.silent ? 1 : undefined)
     };
     this.call_('messages/new', callback, args);

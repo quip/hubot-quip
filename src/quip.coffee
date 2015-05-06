@@ -38,6 +38,7 @@ class QuipHubot extends Adapter
         threadId: envelope.room or envelope.message.room
     options.attachments = attachments.join "," if attachments.length
     options.content = text.join "\n\n" if text.length
+    options.frame = "bubble"
     @robot.logger.info "Sending to #{envelope.room}: #{JSON.stringify(options)}"
     @client.newMessage options, @messageSent
 
