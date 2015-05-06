@@ -1,6 +1,6 @@
 {
   "name": "hubot-quip",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A Quip adapter for Hubot",
   "author": {
       "name": "Quip",
