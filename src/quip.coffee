@@ -32,7 +32,6 @@ class QuipHubot extends Adapter
     if packet
       options =
         threadId: packet.thread.id
-        serviceId: packet.message.id
       options.annotationId = packet.message.annotation.id if packet.message.annotation
     else
       options =
