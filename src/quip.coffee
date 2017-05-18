@@ -90,7 +90,7 @@ class QuipHubot extends Adapter
     @robot.logger.info "Connecting..."
     return if @connected
     return @robot.logger.error "No Socket URL" unless @socketUrl
-    @ws = new WebSocket @socketUrl
+    @ws = new WebSocket @socketUrl, { origin: 'https://quip.com' }
     @ws.on "open", =>
       @robot.logger.info "Opened"
       @connected = true
